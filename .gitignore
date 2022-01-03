@@ -130,3 +130,19 @@ dmypy.json
 
 # .idea
 .idea
+
+# Папки, создаваемые средой разработки
+.DS_Store
+.AppleDouble
+.LSOverride
+
+*.sublime-project
+*.sublime-workspace
+
+.vscode/
+*.code-workspace
+
+# Local History for Visual Studio Code
+.history/
+
+.mypy_cache
