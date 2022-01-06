@@ -71,6 +71,14 @@ class Recipe(models.Model):
         'Tag', verbose_name='Тег', related_name='recipes')
     cooking_time = models.PositiveIntegerField(
         'Время приготовления')
+    favorite = models.ManyToManyField(
+        'User',
+        verbose_name='Пользователи, обожающие этот рецепт',
+        related_name='favorite_recipes')
+    shopping = models.ManyToManyField(
+        'User',
+        verbose_name='Пользователи, собирающиеся готовить по этому рецепту',
+        related_name='shopping_list')
 
     class Meta:
         ordering = ['-pub_date']
@@ -79,3 +87,33 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class Subscriptions(models.Model):
+    subscriber = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='subscriber',
+        verbose_name='Подписчик',
+        help_text='Выберите пользователя, который хочет подписаться на кого-то'
+    )
+    selected_author = models.ForeignKey(
+        User,
+        on_delete=models.CASCADE,
+        related_name='selected_author',
+        verbose_name='Отслеживаемый автор рецептов',
+        help_text='Выберите автора рецептов, на которого вы хотите подписаться'
+    )
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=['subscriber', 'selected_author'],
+                name='unique_subscription')
+        ]
+
+    def save(self, *args, **kwargs):
+        if self.subscriber == self.selected_author:
+            return
+        else:
+            super().save(*args, **kwargs)
