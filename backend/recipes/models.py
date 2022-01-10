@@ -13,6 +13,7 @@ class Tag(models.Model):
         'Английское имя для тега', unique=True)
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Тег'
         verbose_name_plural = 'Теги'
 
@@ -22,42 +23,50 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        'Название ингридиента', max_length=200, unique=True)
+        'Название ингридиента', max_length=200)
     measurement_unit = models.CharField(
         'Единица измерения', max_length=10)
 
     class Meta:
+        ordering = ['name']
         verbose_name = 'Ингридиент'
         verbose_name_plural = 'Ингридиенты'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'measurement_unit'],
+                name='unique_ingredient')
+        ]
 
     def __str__(self):
-        return self.name
+        return ' '.join([self.name, '(', self.measurement_unit, ')'])
 
 
 class Amount_Ingredient(models.Model):
     ingredient = models.ForeignKey(
-        'Ingredient', verbose_name='ID ингридиента',
-        related_name='amount')
+        'Ingredient', related_name='amount', on_delete=models.CASCADE,
+        verbose_name='Ингридиент')
     amount = models.PositiveIntegerField(
         'Количество ингридиента')
 
     class Meta:
+        ordering = ['ingredient']
         verbose_name = 'Количество ингридента'
         verbose_name_plural = 'Список ингридентов и их количество'
 
     def __str__(self):
-        return self.ingredient
+        return (' '.join([
+            str(self.ingredient), '=',
+            str(self.amount)]))
 
 
 class Recipe(models.Model):
     author = models.ForeignKey(
-        User, verbose_name='Автор рецепта', on_delete=models.CASCADE,
-        related_name='recipes')
+        User, related_name='recipes', on_delete=models.CASCADE,
+        verbose_name='Автор рецепта')
     name = models.CharField(
         'Название рецепта', max_length=200)
     pub_date = models.DateTimeField(
-        verbose_name='Дата публикации',
-        help_text='Введите дату',
+        verbose_name='Дата публикации', help_text='Введите дату',
         auto_now_add=True
     )
     image = models.ImageField(
@@ -65,20 +74,21 @@ class Recipe(models.Model):
     text = models.TextField(
         'Описание')
     ingredients = models.ManyToManyField(
-        'Amount_Ingredient', verbose_name='Ингридиенты и их количество',
-        related_name='recipes')
+        Amount_Ingredient, related_name='recipes',
+        verbose_name='Ингридиенты и их количество')
     tag = models.ManyToManyField(
-        'Tag', verbose_name='Тег', related_name='recipes')
+        Tag, related_name='recipes',
+        verbose_name='Тег')
     cooking_time = models.PositiveIntegerField(
-        'Время приготовления')
+        'Время приготовления в минутах')
     favorite = models.ManyToManyField(
-        'User',
-        verbose_name='Пользователи, обожающие этот рецепт',
-        related_name='favorite_recipes')
+        User, related_name='favorite_recipes',
+        blank=True,
+        verbose_name='Пользователи, обожающие этот рецепт')
     shopping = models.ManyToManyField(
-        'User',
-        verbose_name='Пользователи, собирающиеся готовить по этому рецепту',
-        related_name='shopping_list')
+        User, related_name='shopping_list',
+        blank=True,
+        verbose_name='Пользователи, собирающиеся готовить по этому рецепту')
 
     class Meta:
         ordering = ['-pub_date']
@@ -106,6 +116,9 @@ class Subscriptions(models.Model):
     )
 
     class Meta:
+        ordering = ['subscriber']
+        verbose_name = 'Подписка'
+        verbose_name_plural = 'Подписки'
         constraints = [
             models.UniqueConstraint(
                 fields=['subscriber', 'selected_author'],
