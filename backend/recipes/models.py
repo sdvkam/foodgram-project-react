@@ -6,9 +6,10 @@ User = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField(
-        'Имя тега', max_length=100, unique=True)
+        'Имя тега', max_length=200, unique=True)
     color = models.CharField(
-        'HEX-код цвета для тега', max_length=7, unique=True)
+        'HEX-код цвета для тега', max_length=7,
+        unique=True, null=True, blank=True)
     slug = models.SlugField(
         'Английское имя для тега', unique=True)
 
@@ -25,7 +26,7 @@ class Ingredient(models.Model):
     name = models.CharField(
         'Название ингридиента', max_length=200)
     measurement_unit = models.CharField(
-        'Единица измерения', max_length=10)
+        'Единица измерения', max_length=200)
 
     class Meta:
         ordering = ['name']
@@ -41,17 +42,22 @@ class Ingredient(models.Model):
         return ' '.join([self.name, '(', self.measurement_unit, ')'])
 
 
-class Amount_Ingredient(models.Model):
+class AmountIngredient(models.Model):
     ingredient = models.ForeignKey(
-        'Ingredient', related_name='amount', on_delete=models.CASCADE,
+        Ingredient, related_name='amount', on_delete=models.CASCADE,
         verbose_name='Ингридиент')
     amount = models.PositiveIntegerField(
         'Количество ингридиента')
 
     class Meta:
-        ordering = ['ingredient']
+        ordering = ['ingredient', 'amount']
         verbose_name = 'Количество ингридента'
         verbose_name_plural = 'Список ингридентов и их количество'
+        constraints = [
+            models.UniqueConstraint(
+                fields=['ingredient', 'amount'],
+                name='unique_amountingredient')
+        ]
 
     def __str__(self):
         return (' '.join([
@@ -74,11 +80,11 @@ class Recipe(models.Model):
     text = models.TextField(
         'Описание')
     ingredients = models.ManyToManyField(
-        Amount_Ingredient, related_name='recipes',
+        AmountIngredient, related_name='recipes',
         verbose_name='Ингридиенты и их количество')
-    tag = models.ManyToManyField(
+    tags = models.ManyToManyField(
         Tag, related_name='recipes',
-        verbose_name='Тег')
+        verbose_name='Теги')
     cooking_time = models.PositiveIntegerField(
         'Время приготовления в минутах')
     favorite = models.ManyToManyField(
