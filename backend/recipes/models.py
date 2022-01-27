@@ -1,5 +1,6 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.core.exceptions import ValidationError
+from django.db import models
 
 User = get_user_model()
 
@@ -9,9 +10,9 @@ class Tag(models.Model):
         'Имя тега', max_length=200, unique=True)
     color = models.CharField(
         'HEX-код цвета для тега', max_length=7,
-        unique=True, null=True, blank=True)
+        unique=True)
     slug = models.SlugField(
-        'Английское имя для тега', unique=True)
+        'Английское имя для тега', max_length=200, unique=True)
 
     class Meta:
         ordering = ['name']
@@ -133,6 +134,6 @@ class Subscriptions(models.Model):
 
     def save(self, *args, **kwargs):
         if self.subscriber == self.selected_author:
-            return
+            raise ValidationError('Нельзя подписаться на самого себя')
         else:
             super().save(*args, **kwargs)

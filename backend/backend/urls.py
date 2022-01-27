@@ -13,21 +13,28 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
-from django.contrib import admin
-from django.urls import include, path
 from django.conf import settings
 from django.conf.urls.static import static
-from django.views.generic import TemplateView
-
+from django.contrib import admin
+from django.urls import include, path
+from drf_spectacular.views import (SpectacularAPIView, SpectacularRedocView,
+                                   SpectacularSwaggerView)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('api.urls')),
+    # Пути для спеки:
     path(
-        'redoc/',
-        TemplateView.as_view(template_name='redoc.html'),
-        name='redoc'
-    ),
-    path('api/', include('recipes.urls')),
+        'api/schema/',
+        SpectacularAPIView.as_view(), name='schema'),
+    # Путь для Redoc:
+    path(
+        'api/schema/redoc/',
+        SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
+    # Путь для спеки от Swagger — тут можно делать запросы как в Postman!
+    path(
+        'api/schema/swagger-ui/',
+        SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
 ]
 
 if settings.DEBUG:
