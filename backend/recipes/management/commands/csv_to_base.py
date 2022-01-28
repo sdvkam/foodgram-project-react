@@ -11,7 +11,7 @@ class Command(BaseCommand):
     help = 'Move data from .csv files to database'
 
     def handle(self, *args, **options):
-        dir_files = os.path.join(os.path.dirname(settings.BASE_DIR), 'data')
+        dir_files = os.path.join(settings.BASE_DIR, 'data')
         file_name = 'ingredients.csv'
         file_name = os.path.join(dir_files, file_name)
         one_file = open(file_name)
