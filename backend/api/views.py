@@ -46,8 +46,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated, ))
     def download_shopping_cart(self, request):
         list_ingredients = Ingredient.objects.filter(
-            amount__recipes__shopping=request.user
-            ).annotate(
+            amount__recipes__shopping=request.user).annotate(
                 nums=Sum('amount__amount'))
         list_response = []
         for i, obj in enumerate(list_ingredients, start=1):
@@ -173,4 +172,4 @@ class UserViewSet(ListCreateRetrieveViewSet):
         subscription = get_object_or_404(
             Subscriptions, subscriber=request.user, selected_author=selected)
         subscription.delete()
-        return Response('Вы отписались',  status.HTTP_204_NO_CONTENT)
+        return Response('Вы отписались', status.HTTP_204_NO_CONTENT)

@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
+from django.core.validators import MinValueValidator
 from django.db import models
 
 User = get_user_model()
@@ -87,7 +88,7 @@ class Recipe(models.Model):
         Tag, related_name='recipes',
         verbose_name='Теги')
     cooking_time = models.PositiveIntegerField(
-        'Время приготовления в минутах')
+        'Время приготовления в минутах', validators=[MinValueValidator(1)])
     favorite = models.ManyToManyField(
         User, related_name='favorite_recipes',
         blank=True,
