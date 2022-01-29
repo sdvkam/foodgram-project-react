@@ -1,6 +1,5 @@
-from rest_framework import status
-
 from recipes.models import Recipe
+from rest_framework import status
 
 from .serializers import RecipeMiniFields
 

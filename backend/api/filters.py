@@ -2,7 +2,6 @@ from django_filters import rest_framework as filters
 from django_filters.rest_framework import FilterSet
 from django_filters.rest_framework.filters import (ChoiceFilter,
                                                    ModelMultipleChoiceFilter)
-
 from recipes.models import Recipe, Tag
 
 

@@ -4,10 +4,9 @@ import uuid
 
 import six
 from django.core.files.base import ContentFile
-from rest_framework import serializers
-
 from recipes.models import (AmountIngredient, Ingredient, Recipe,
                             Subscriptions, Tag, User)
+from rest_framework import serializers
 
 
 class EmptySerializer(serializers.Serializer):
