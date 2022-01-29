@@ -138,11 +138,10 @@ class ImageBase64(serializers.Field):
             extension = default_extension
         if extension == "jpeg":
             extension = "jpg"
-        data = ContentFile(
+        return ContentFile(
             decoded_image,
             name='.'.join([file_name, extension])
         )
-        return data
 
 
 class RecipeSerializer(serializers.ModelSerializer):
