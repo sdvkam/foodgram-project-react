@@ -9,7 +9,7 @@ services:
       - ./.env
 
   web:
-    build: ../backend/
+    image: sdvkam/fpr_web
     restart: always
     volumes:
       - static_value:/app/static/
