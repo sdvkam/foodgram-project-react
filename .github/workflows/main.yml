@@ -55,7 +55,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
-              pwd
+              cd sdvkam/foodgram-project-react/infra/
               sudo docker-compose stop
               sudo docker-compose rm web
               touch .env
