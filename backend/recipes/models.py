@@ -8,16 +8,24 @@ User = get_user_model()
 
 class Tag(models.Model):
     name = models.CharField(
-        'Имя тега', max_length=200, unique=True)
+        'Имя тега', max_length=200, unique=True,
+        help_text=('Обязательно. Должно быть уникальным.'
+                   '<br>Максимум 200 символов.')
+    )
     color = models.CharField(
-        'HEX-код цвета для тега', max_length=7,
-        unique=True)
+        'HEX-код цвета для тега', max_length=7, unique=True,
+        help_text=('Обязательно. Должно быть уникальным.'
+                   '<br>Пример: "#FF0000" - это красный')
+    )
     slug = models.SlugField(
-        'Английское имя для тега', max_length=200, unique=True)
+        'Английское имя для тега', max_length=200, unique=True,
+        help_text=('Обязательно. Должно быть уникальным.'
+                   '<br>Английские буквы, цифры, подчеркивания или дефисы.')
+    )
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'Тег'
+        verbose_name = 'тег'
         verbose_name_plural = 'Теги'
 
     def __str__(self):
@@ -26,13 +34,15 @@ class Tag(models.Model):
 
 class Ingredient(models.Model):
     name = models.CharField(
-        'Название ингридиента', max_length=200)
+        'Название ингридиента', max_length=200,
+        help_text='Обязательно. Максимум 200 символов.')
     measurement_unit = models.CharField(
-        'Единица измерения', max_length=200)
+        'Единица измерения', max_length=200,
+        help_text='Обязательно. Максимум 200 символов.')
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'Ингридиент'
+        verbose_name = 'ингридиент'
         verbose_name_plural = 'Ингридиенты'
         constraints = [
             models.UniqueConstraint(
@@ -47,9 +57,10 @@ class Ingredient(models.Model):
 class AmountIngredient(models.Model):
     ingredient = models.ForeignKey(
         Ingredient, related_name='amount', on_delete=models.CASCADE,
-        verbose_name='Ингридиент')
+        verbose_name='Ингридиент', help_text='Обязательно.')
     amount = models.PositiveIntegerField(
-        'Количество ингридиента')
+        'Количество ингридиента', validators=[MinValueValidator(1)],
+        help_text='Обязательно. Целое число >= 1.')
 
     class Meta:
         ordering = ['ingredient', 'amount']
@@ -70,25 +81,28 @@ class AmountIngredient(models.Model):
 class Recipe(models.Model):
     author = models.ForeignKey(
         User, related_name='recipes', on_delete=models.CASCADE,
-        verbose_name='Автор рецепта')
+        verbose_name='Автор рецепта', help_text='Обязательно.')
     name = models.CharField(
-        'Название рецепта', max_length=200)
+        'Название рецепта', max_length=200,
+        help_text='Обязательно. Максимум 200 символов.')
     pub_date = models.DateTimeField(
         verbose_name='Дата публикации', help_text='Введите дату',
         auto_now_add=True
     )
     image = models.ImageField(
-        'Фотография блюда', upload_to='recipes/')
+        'Фотография блюда', upload_to='recipes/',
+        help_text='Обязательно.')
     text = models.TextField(
-        'Описание')
+        'Описание', help_text='Обязательно.')
     ingredients = models.ManyToManyField(
         AmountIngredient, related_name='recipes',
-        verbose_name='Ингридиенты и их количество')
+        verbose_name='Ингридиенты и их количество', help_text='Обязательно.')
     tags = models.ManyToManyField(
         Tag, related_name='recipes',
-        verbose_name='Теги')
+        verbose_name='Теги', help_text='Обязательно.')
     cooking_time = models.PositiveIntegerField(
-        'Время приготовления в минутах', validators=[MinValueValidator(1)])
+        'Время приготовления в минутах', help_text='Обязательно.',
+        validators=[MinValueValidator(1)])
     favorite = models.ManyToManyField(
         User, related_name='favorite_recipes',
         blank=True,
@@ -109,18 +123,18 @@ class Recipe(models.Model):
 
 class Subscriptions(models.Model):
     subscriber = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='subscriber',
+        User, on_delete=models.CASCADE, related_name='subscriber',
         verbose_name='Подписчик',
-        help_text='Выберите пользователя, который хочет подписаться на кого-то'
+        help_text=(
+            'Обязательно.'
+            '<br>Выберите пользователя, который хочет подписаться на кого-то')
     )
     selected_author = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='selected_author',
+        User, on_delete=models.CASCADE, related_name='selected_author',
         verbose_name='Отслеживаемый автор рецептов',
-        help_text='Выберите автора рецептов, на которого вы хотите подписаться'
+        help_text=(
+            'Обязательно.'
+            '<br>Выберите автора рецептов, на которого вы хотите подписаться')
     )
 
     class Meta:
@@ -133,8 +147,6 @@ class Subscriptions(models.Model):
                 name='unique_subscription')
         ]
 
-    def save(self, *args, **kwargs):
+    def clean(self):
         if self.subscriber == self.selected_author:
             raise ValidationError('Нельзя подписаться на самого себя')
-        else:
-            super().save(*args, **kwargs)
