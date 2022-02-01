@@ -9,7 +9,8 @@ services:
       - ./.env
 
   web:
-    image: sdvkam/fpr_web
+    # image: sdvkam/fpr_web
+    build: ../backend
     restart: always
     volumes:
       - static_value:/app/static/
@@ -18,15 +19,6 @@ services:
       - db
     env_file:
       - ./.env
-
-  # frontend:
-  #   build:
-  #     context: ../frontend
-  #     dockerfile: Dockerfile
-  #   volumes:
-  #     - ../frontend/:/app/result_build/
-  #   depends_on:
-  #     - web
 
   nginx:
     image: nginx:1.19.3

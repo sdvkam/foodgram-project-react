@@ -13,12 +13,15 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 from dotenv import load_dotenv
+from recipes.utilities import make_dict_tranlit
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 dotenv_path = os.path.join(os.path.dirname(BASE_DIR), 'infra', '.env')
 load_dotenv()
+
+DICT_TRANSLIT_RUS_TO_ENGLISH = make_dict_tranlit()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/

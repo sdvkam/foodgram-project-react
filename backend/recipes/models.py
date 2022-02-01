@@ -1,7 +1,9 @@
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
+from django.template.defaultfilters import slugify
 
 User = get_user_model()
 
@@ -97,6 +99,12 @@ class Recipe(models.Model):
         User, related_name='shopping_list',
         blank=True,
         verbose_name='Пользователи, собирающиеся готовить по этому рецепту')
+    slug = models.SlugField(
+        'Английское имя для рецепта', max_length=200, unique=True, blank=True,
+        help_text=('Уникальное.<br>Можно оставить пустым, '
+                   'тогда будем сформирован автоматически '
+                   'из названия рецепта и его номера в базе.'
+                   '<br>Будьте осторожны при самостоятельном редактировании.'))
 
     class Meta:
         ordering = ['-pub_date']
@@ -105,6 +113,14 @@ class Recipe(models.Model):
 
     def __str__(self):
         return self.name
+
+    def clean(self):
+        slug = self.slug
+        if slug == '':
+            slug = slugify(
+                self.name.translate(
+                    str.maketrans(settings.DICT_TRANSLIT_RUS_TO_ENGLISH)))
+            self.slug = f'{slug}_{self.id}'
 
 
 class Subscriptions(models.Model):
