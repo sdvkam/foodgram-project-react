@@ -50,15 +50,20 @@
                 или<br>
             `docker-compose exec web python manage.py createsuperuser` - для создания суперпользователя и работы с пустой базой
       3.  `docker-compose exec web python manage.py collectstatic --no-input` - для собирания статичных файлов в одну папку (нужно базе данных и nginx)
+
 5. URLs
     + Проект становиться доступен по адресу: [id]http://localhost
     + Админка: [id]http://localhost/admin/
     + Описание API: [id]http://localhost/api/docs/
     + Само API: [id]http://localhost/api/
+
 6. Тестовые записи включают:
     + 3 пользователей: admin, ivan, petya
     + вход по email (у всех надо добавить **@qwerty.qwerty** к логину)
     + пароль для админа очень сильный: 123
     + для остальных: 1-234567890
     + 10 рецептов и вся обвязка для них
-  
+
+7. Makefile
+    + make dev - построить инфраструктуру Python и Django для проекта
+    + make prod - построить/перестроить контейнеры для запуска проекта локально 
