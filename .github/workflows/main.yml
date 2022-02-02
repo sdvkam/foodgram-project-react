@@ -60,7 +60,7 @@ jobs:
               cd foodgram-project-react/infra/
               sudo docker-compose stop
               sudo docker-compose rm web
-              sudo docker image rm sdvkam/fpr_web:latest
+              sudo docker image rm --force sdvkam/fpr_web:latest
               touch .env
               echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
               echo DB_NAME=${{ secrets.DB_NAME }} >> .env
