@@ -58,6 +58,8 @@ jobs:
           passphrase: ${{ secrets.PASSPHRASE }}
           script: |
               cd foodgram-project-react/infra/
+              # sudo docker-compose stop
+              # sudo docker-compose rm web
               touch .env
               echo DB_ENGINE=${{ secrets.DB_ENGINE }} >> .env
               echo DB_NAME=${{ secrets.DB_NAME }} >> .env
@@ -65,8 +67,10 @@ jobs:
               echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
               echo DB_HOST=${{ secrets.DB_HOST }} >> .env
               echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+              # sudo docker-compose up -d
               sudo docker-compose down -v
-              sudo docker-compose up -d --build
+              sudo docker image rm sdvkam/fpr_web:latest
+              sudo docker-compose up -d
               sudo docker-compose exec web python manage.py migrate
               sudo docker-compose exec web python manage.py loaddata dump.json
               sudo docker-compose exec web python manage.py collectstatic --no-input
