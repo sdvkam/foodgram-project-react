@@ -60,7 +60,7 @@ jobs:
           script: |
               cd foodgram-project-react/infra/
               sudo docker-compose stop
-              sudo docker-compose rm web
+              sudo docker-compose rm -f web
               sudp docker-compose pull web
               touch .env
               # rewrite fie .env
