@@ -1,14 +1,6 @@
 version: '3.3'
 
 services:
-
-  frontend:
-    build:
-      context: ../frontend
-      dockerfile: Dockerfile
-    volumes:
-      - ../frontend/:/app/result_build/
-
   db:
     image: postgres:13.0-alpine
     volumes:
@@ -17,6 +9,7 @@ services:
       - ./.env
 
   web:
+    # image: sdvkam/fpr_web
     build: ../backend
     restart: always
     volumes:
