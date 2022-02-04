@@ -9,7 +9,6 @@ services:
       - ./.env
 
   web:
-    # image: sdvkam/fpr_web
     build: ../backend
     restart: always
     volumes:
