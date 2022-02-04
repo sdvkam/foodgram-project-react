@@ -64,6 +64,7 @@
             все остальные таблички останутся пустыми
         3.  `docker-compose exec web python manage.py collectstatic --no-input` - собирание статичных файлов в одну папку (нужно базе данных и nginx)
     +  или можно запустить Makefile с командами:
+        *  надо вернуться в папку с проектом "foodgram-project-react"
         * `make dev`   - запуск проекта с полным набором тестовых данных
         * `make prod`  - запуск проекта с одним суперпользователем и необходимым минимумом данных (таблица: Ingredients)
     +  остановка, повторный запуск и перестройка проекта
@@ -87,5 +88,37 @@
     + 10 рецептов и вся обвязка для них
 
 7. Makefile
-    + make dev - построить инфраструктуру Python и Django для проекта
-    + make prod - построить/перестроить контейнеры для запуска проекта локально 
+    dev:<br>
+        # создание файла переменных окружения и заполнения данными<br>
+        `touch infra/.env`<br>
+        `cd infra/ && sudo echo DB_ENGINE=django.db.backends.postgresql > .env`<br>
+        `cd infra/ && sudo echo DB_NAME=postgres >> .env`<br>
+        `cd infra/ && sudo echo POSTGRES_USER=postgres >> .env`<br>
+        `cd infra/ && sudo echo POSTGRES_PASSWORD=1234567890 >> .env`<br>
+        `cd infra/ && sudo echo DB_HOST=db >> .env`<br>
+        `cd infra/ && sudo echo DB_PORT=5432 >> .env`<br>
+        # удаления контейнеров и базы данных (если они были уже запущены)<br>
+        `cd infra/ && sudo docker-compose down -v`<br>
+        # строим всю инфраструктуру: frontend и backend<br>
+        `cd infra/ && sudo docker-compose up -d --build`<br>
+        # создаем и заполняем базу данных тестовыми данными<br>
+        `cd infra/ && sudo docker-compose exec web python manage.py migrate`<br>
+        `cd infra/ && sudo docker-compose exec web python manage.py loaddata dump.json`<br>
+        # собираем статику в одну папку (для nginx and postgres)<br>
+        `cd infra/ && sudo docker-compose exec web python manage.py collectstatic --no-input`<br>
+
+    prod:<br>
+        `touch infra/.env`<br>
+        `cd infra/ && sudo echo DB_ENGINE=django.db.backends.postgresql > .env`<br>
+        `cd infra/ && sudo echo DB_NAME=postgres >> .env`<br>
+        `cd infra/ && sudo echo POSTGRES_USER=postgres >> .env`<br>
+        `cd infra/ && sudo echo POSTGRES_PASSWORD=1234567890 >> .env`<br>
+        `cd infra/ && sudo echo DB_HOST=db >> .env`<br>
+        `cd infra/ && sudo echo DB_PORT=5432 >> .env`<br>
+        `cd infra/ && sudo docker-compose down -v`<br>
+        `cd infra/ && sudo docker-compose up -d --build`<br>
+        `cd infra/ && sudo docker-compose exec web python manage.py migrate`<br>
+        # создаем одного суперпользователя и заполняем одну таблицу с ингридиентами<br>
+        `cd infra/ && sudo docker-compose exec web python manage.py createsuperuser`<br>
+        `cd infra/ && sudo docker-compose exec web python manage.py csv_to_base`<br>
+        `cd infra/ && sudo docker-compose exec web python manage.py collectstatic --no-input`<br>
