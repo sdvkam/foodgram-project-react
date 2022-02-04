@@ -26,3 +26,6 @@ prod:
 	cd infra/ && sudo docker-compose exec web python manage.py createsuperuser
 	cd infra/ && sudo docker-compose exec web python manage.py csv_to_base
 	cd infra/ && sudo docker-compose exec web python manage.py collectstatic --no-input
+
+linter:
+	python -m flake8 backend
