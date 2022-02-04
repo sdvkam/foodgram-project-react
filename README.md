@@ -56,12 +56,13 @@
         *  закоментировать в файле "docker-compose.yaml" первый блок "frontend"
         *  или взять файла "3containers_docker-compose.yaml" и переименовать его в "docker-compose.yaml"
     + подготовка базы данных:
-        1.  `docker-compose exec web python manage.py migrate` - создание всех таблицек базы данных
-        2.  `docker-compose exec web python manage.py loaddata dump.json` - для наполнения базы тестовыми данными<br>
+        1.  `docker-compose exec web python manage.py migrate` - создание всех табличек базы данных
+        2.  `docker-compose exec web python manage.py loaddata dump.json` - наполнение базы тестовыми данными<br>
                 или<br>
-            `docker-compose exec web python manage.py createsuperuser` - для создания суперпользователя и работы с пустой базой
-            `docker-compose exec web python manage.py csv_to_base` - для заполнения таблички со списком ингридентов для рецептов
-        3.  `docker-compose exec web python manage.py collectstatic --no-input` - для собирания статичных файлов в одну папку (нужно базе данных и nginx)
+            `docker-compose exec web python manage.py createsuperuser` - создание суперпользователя<br>
+            `docker-compose exec web python manage.py csv_to_base` - заполнение таблички со списком ингридентов для рецептов<br>
+            все остальные таблички останутся пустыми
+        3.  `docker-compose exec web python manage.py collectstatic --no-input` - собирание статичных файлов в одну папку (нужно базе данных и nginx)
     +  или можно запустить Makefile с командами:
         * make dev   - запуск проекта с полным набором тестовых данных
         * make prod  - запуск проекта с одним суперпользователем и необходимым минимумом данных (таблица: Ingredients)
