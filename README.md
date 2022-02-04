@@ -31,25 +31,40 @@
     + djoser - для работы с токенами (не JWT-tokens)
     + Pillow, sorl-thumbnail - для работы с картинками
     + django-filter - для работы с параметрами запроса (фильтры и поиск)
-    + python-dotenv - для подключение к проекту переменных окружения (представлены в файле ".env":
-      * DB_ENGINE=django.db.backends.postgresql # указываем, что работаем с postgresql
-      * DB_NAME=postgres # имя базы данных
-      * POSTGRES_USER=postgres # логин для подключения к базе данных
-      * POSTGRES_PASSWORD=1234567890 # пароль для подключения к БД (установите свой)
-      * DB_HOST=db # название сервиса (контейнера)
-      * DB_PORT=5432 # порт для подключения к БД
+    + python-dotenv - для подключение к проекту переменных окружения (должны быть в файле ".env"):
+        * Примерное содержание файла ".env"
+            * DB_ENGINE=django.db.backends.postgresql # указываем, что работаем с postgresql
+            * DB_NAME=postgres # имя базы данных
+            * POSTGRES_USER=postgres # логин для подключения к базе данных
+            * POSTGRES_PASSWORD=1234567890 # пароль для подключения к БД (установите свой)
+            * DB_HOST=db # название сервиса (контейнера)
+            * DB_PORT=5432 # порт для подключения к БД
     
-4. Для запуска проекта локально создаются три контейнера.
-    + Nginx - PostgreSQL - Django + Gunicorn
+4. Запуск проекта локально - ручками :)
+    + Скачиваем проект с GitHub
     + переходим в папку: infra
+    + создаем файла ".env" и заполняем его по образцу выше
+        * если каких-то переменных в файле не будет - значения будут установлены по умолчанию
+        * и взяты из файла "settings.py" в Django проекте - будьте аккуратны, иначе безопасность приложения окажется под угрозой
     + запуск:
-      * `docker-compose up -d`
+        * `docker-compose up -d`
+    + создаются 4 контейнера
+        *  Frontend -- Nginx - PostgreSQL - (Django + Gunicorn)
+        *  контейнер Frontend нужен для создания одной папочки (build) в папке frontend
+        *  это найстройка frontend-части проекта, работающего через фреймворк "React"
+        *  далее контейнер и образ можно удалить
+        *  закоментировать в файле "docker-compose.yaml" первый блок "frontend"
+        *  или взять файла "3containers_docker-compose.yaml" и переименовать его в "docker-compose.yaml"
     + подготовка базы данных:
-      1.  `docker-compose exec web python manage.py migrate` - создание всех таблицек базы данных
-      2.  `docker-compose exec web python loaddata dump.json` - для наполнения базы тестовыми данными<br>
+        1.  `docker-compose exec web python manage.py migrate` - создание всех таблицек базы данных
+        2.  `docker-compose exec web python manage.py loaddata dump.json` - для наполнения базы тестовыми данными<br>
                 или<br>
             `docker-compose exec web python manage.py createsuperuser` - для создания суперпользователя и работы с пустой базой
-      3.  `docker-compose exec web python manage.py collectstatic --no-input` - для собирания статичных файлов в одну папку (нужно базе данных и nginx)
+            `docker-compose exec web python manage.py csv_to_base` - для заполнения таблички со списком ингридентов для рецептов
+        3.  `docker-compose exec web python manage.py collectstatic --no-input` - для собирания статичных файлов в одну папку (нужно базе данных и nginx)
+    +  или можно запустить Makefile с командами:
+        * make dev   - запуск проекта с полным набором тестовых данных
+        * make prod  - запуск проекта с одним суперпользователем и необходимым минимумом данных (таблица: Ingredients)
 
 5. URLs
     + Проект становиться доступен по адресу: [id]http://localhost
