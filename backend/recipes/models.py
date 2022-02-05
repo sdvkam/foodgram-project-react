@@ -1,9 +1,9 @@
-from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
 from django.core.validators import MinValueValidator
 from django.db import models
-from django.template.defaultfilters import slugify
+
+from .utilities import rus_to_engslug_addnow
 
 User = get_user_model()
 
@@ -117,7 +117,7 @@ class Recipe(models.Model):
         'Английское имя для рецепта', max_length=200, unique=True, blank=True,
         help_text=('Уникальное.<br>Оставите поле пустым и '
                    'тогда значение будет сформировано автоматически '
-                   'из названия рецепта и его номера в базе.'
+                   'из названия рецепта и времени последнего сохранения.'
                    '<br>Будьте осторожны при самостоятельном редактировании.'))
 
     class Meta:
@@ -129,14 +129,18 @@ class Recipe(models.Model):
         return self.name
 
     def clean(self):
-        slug = self.slug
-        if slug == '':
-            # translate используется:
-            # так как название рецепта может быть написано кирилицей
-            slug = slugify(
-                self.name.translate(
-                    str.maketrans(settings.DICT_TRANSLIT_RUS_TO_ENGLISH)))
-            self.slug = f'{slug}_{self.id}'
+        # сюда попадаем из Админки
+        if self.slug in ['', None]:
+            self.slug = rus_to_engslug_addnow(self.name)
+        if Recipe.objects.filter(slug=self.slug).exists():
+            raise ValidationError(
+                'Поле: Английское имя для рецепта должно быть уникальным')
+
+    def save(self, *args, **kwargs):
+        # сюда попадаем из API
+        if self.slug in ['', None]:
+            self.slug = rus_to_engslug_addnow(self.name)
+        super().save(*args, **kwargs)
 
 
 class Subscriptions(models.Model):
