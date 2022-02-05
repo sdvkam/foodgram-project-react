@@ -131,7 +131,8 @@ class Recipe(models.Model):
     def clean(self):
         slug = self.slug
         if slug == '':
-            # translate используется - так как название рецепта может быть написано кирилицей
+            # translate используется - 
+            # так как название рецепта может быть написано кирилицей
             slug = slugify(
                 self.name.translate(
                     str.maketrans(settings.DICT_TRANSLIT_RUS_TO_ENGLISH)))
