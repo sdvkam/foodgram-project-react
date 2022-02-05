@@ -20,7 +20,7 @@ def make_dict_tranlit():
 def rus_to_engslug_addnow(name):
     # translate используется:
     # так как название рецепта может быть написано кирилицей
-    slug = slugify(
-        name.translate(
-            str.maketrans(settings.DICT_TRANSLIT_RUS_TO_ENGLISH)))
-    return f'{slug}_{dt.datetime.utcnow()}'
+    eng_name = name.translate(
+        str.maketrans(settings.DICT_TRANSLIT_RUS_TO_ENGLISH)
+    )
+    return slugify(f'{eng_name}_{dt.datetime.utcnow()}')

@@ -128,16 +128,8 @@ class Recipe(models.Model):
     def __str__(self):
         return self.name
 
-    def clean(self):
-        # сюда попадаем из Админки
-        if self.slug in ['', None]:
-            self.slug = rus_to_engslug_addnow(self.name)
-        if Recipe.objects.filter(slug=self.slug).exists():
-            raise ValidationError(
-                'Поле: Английское имя для рецепта должно быть уникальным')
-
     def save(self, *args, **kwargs):
-        # сюда попадаем из API
+        # не метод CLEAN, так как в SAVE попадаем как из API, так и из админки
         if self.slug in ['', None]:
             self.slug = rus_to_engslug_addnow(self.name)
         super().save(*args, **kwargs)
