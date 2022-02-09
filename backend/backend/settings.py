@@ -30,9 +30,9 @@ DICT_TRANSLIT_RUS_TO_ENGLISH = make_dict_tranlit()
 SECRET_KEY = 'oilc+h(xg4rsq8l72*a4!ki5m1)!g_4%pz!ar5q%7q27w*_ys9'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'web']
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
