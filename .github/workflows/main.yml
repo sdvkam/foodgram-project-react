@@ -41,6 +41,9 @@ jobs:
         - name: Push to Docker Hub
           uses: docker/build-push-action@v2
           with:
+            script: |
+              touch .env
+              echo  DB_NAME=${{ secrets.DB_NAME }} >> .env
             push: true
             tags: sdvkam/fpr_web:latest
             context: backend/
